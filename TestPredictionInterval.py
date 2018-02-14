@@ -17,14 +17,17 @@ plt.ylim([nSimCohorts[0]/2, nSimCohorts[-1]*2])     # range of y-axis
 # calculate prediction intervals for different number of simulated cohorts
 for n in nSimCohorts:
 
+    # create a multi cohort object
     multiCohort = Cls.MultiCohort(
         ids=range(n),
         pop_sizes=[Params.REAL_POP_SIZE] * n,
         mortality_probs=[Params.MORTALITY_PROB]*n)
-
+    # simulate the multiple cohorts
     multiCohort.simulate(Params.TIME_STEPS)
 
+    # get the overall mean of survival times
     mean = multiCohort.get_overall_mean_survival()
+    # get the prediction interval for the mean survival time
     PI = multiCohort.get_PI_mean_survival(Params.ALPHA)
 
     # find the coordinates of the estimated mean and confidence intervals

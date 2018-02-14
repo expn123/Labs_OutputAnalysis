@@ -3,27 +3,26 @@ import matplotlib.pyplot as plt
 import Parameters as Params
 import SurvivalModelClasses as Cls
 
-
 # to test the hypothesis that true mean survival time is not equal to the null
 NULL_SURVIVAL_TIME = 9      # null hypothesis
-POP_SIZES = [10, 100, 1000, 10000]  # testing the hypothesis with different cohort population sizes
+SIM_POP_SIZES = [10, 100, 1000, 10000]  # population size of simulated cohorts to test the null hypothesis
 
-# simulate the cohorts
+# create a multi cohort object
 multiCohort = Cls.MultiCohort(
-    ids=[1] * len(POP_SIZES),  # [1, 1, ..., 1] using the same random number generator seed for all cohorts
-    pop_sizes=POP_SIZES,
-    mortality_probs=[Params.MORTALITY_PROB]*len(POP_SIZES))
-
+    ids=[1] * len(SIM_POP_SIZES),  # [1, 1, ..., 1] using the same random number generator seed for all cohorts
+    pop_sizes=SIM_POP_SIZES,
+    mortality_probs=[Params.MORTALITY_PROB]*len(SIM_POP_SIZES))
+# simulate the multiple cohorts
 multiCohort.simulate(Params.TIME_STEPS)
 
 # create the figure
 fig = plt.figure('t-Confidence Intervals')
 plt.title('Hypothesis Test')
 plt.xlim([0, 2*1/Params.MORTALITY_PROB])   # range of x-axis
-plt.ylim([min(POP_SIZES) / 10, max(POP_SIZES) * 10])  # range of y-axis
+plt.ylim([min(SIM_POP_SIZES) / 10, max(SIM_POP_SIZES) * 10])  # range of y-axis
 
 # add confidence intervals to the figure
-for i in range(len(POP_SIZES)-1, -1, -1):
+for i in range(len(SIM_POP_SIZES) - 1, -1, -1):
     # mean survival time
     mean = multiCohort.get_mean_survival(i)
     # confidence interval
@@ -31,14 +30,13 @@ for i in range(len(POP_SIZES)-1, -1, -1):
 
     # find the coordinates of the estimated mean and confidence intervals
     mean_x = mean           # mean survival time
-    mean_y = POP_SIZES[i]   # population size of this cohort
+    mean_y = SIM_POP_SIZES[i]   # population size of this cohort
     CI_xs = np.linspace(CI[0], CI[1], 2) # [lower upper] of the confidence interval
     CI_ys = mean_y*np.ones(2)    # [popSize popSize]
 
     plt.semilogy(mean_x, mean_y, 'ko')  # draw the estimated mean (in log scale)
     plt.semilogy(CI_xs, CI_ys, 'k')     # draw the confidence interval (in log scale)
 
-#
 # adding a blue vertical line to show the null value
 plt.axvline(NULL_SURVIVAL_TIME, color='b', linewidth =.5)
 # adding a black dashed vertical line to show the true survival mean
@@ -68,6 +66,6 @@ plt.annotate('Null Value ',
              horizontalalignment='right')
 
 # labels
-plt.ylabel('Simulated cohort population size')
-plt.xlabel('Survival time')
+plt.ylabel('Population size of the simulated cohort')
+plt.xlabel('Mean survival time')
 plt.show()
