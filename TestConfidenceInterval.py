@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import Parameters as Params
 import SurvivalModelClasses as Cls
-import scr.StatisticalClasses as StatSupport
 
 NUM_CIs = 100           # number of confidence intervals to visualize
 
